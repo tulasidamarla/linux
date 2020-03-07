@@ -412,14 +412,15 @@ The last line you will see will be like this.
 	To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
 
 Valid values 
-------------
-m -> 0-59
-h -> 0-23
-dom -> 1-31
-mon -> 1-12
-dow -> 0-6
+------------<br>
+m -> 0-59 <br>
+h -> 0-23<br>
+dom -> 1-31<br>
+mon -> 1-12<br>
+dow -> 0-6<br>
 
 For ex, if you want to setup a cronjob for recovery task every day, midnight
-0 0 * * * sudo tar -cvzpf /home/ubuntu/mybackup`date +\%d-\%H:\%M`.tar.gz /var/www/
+	
+	0 0 * * * sudo tar -cvzpf /home/ubuntu/mybackup`date +\%d-\%H:\%M`.tar.gz /var/www/
 
 To understand date, please refer to the link https://devanswers.co/how-to-automatically-backup-web-server-doc-root-tar-cron/
