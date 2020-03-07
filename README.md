@@ -206,21 +206,222 @@ Permissions
 -----------
 In unix/linux permissions are represented by 3 digit numbers like 755, 777 etc. The first digit represent the permissions of the owner, second represent permissions for the members of the group and third represents for others.
 
+Each number is any combination of read, write and execute.
 
+Read -> 4
+Write -> 2
+Execute -> 1
 
+If you want  read and execute, it should have permisson number as 5(4 + 1).
+If you want read and write, it should have permission as 6(4 + 2).
+If you want only execute , it should have permission number of 1.
 
+Note: Generally read and execute are the common permissions given to group and other users. i.e. 5.
 
+Change permissions
+------------------
+To change the permissions for a file use the command --> sudo chmod 755 filename . 
 
+Note: The same command works for directories also, but permission level for subdirectories and files will not change. To recursively apply permissions to directories use "-R".
 
+Change Ownership
+----------------
+To change the user ownership of a file ->  sudo chown {username} {filename}. For folder use "-R".
+To change the group ownership of a file -> sudo chgrp {username} {filename}. For folder user "-R".
 
+Linux Network Configuration
+---------------------------
+The command "ifconfig"(ipconfig equivalent in windows) gives all the network cards information. It gives information like network card1, network card2, mac address etc.
+Here is the sample output:
 
+eth0      Link encap:Ethernet  HWaddr 12:5d:28:6d:79:57
+          inet addr:172.31.80.133  Bcast:172.31.95.255  Mask:255.255.240.0
+          inet6 addr: fe80::105d:28ff:fe6d:7957/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:9001  Metric:1
+          RX packets:296535 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:115681 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:374490044 (374.4 MB)  TX bytes:15989071 (15.9 MB)
 
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:192 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:192 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:14456 (14.4 KB)  TX bytes:14456 (14.4 KB)
 
+Note: we have one network adapter as per the above response. i.e. eth0. inet address is 172.31.80.133.
 
+If you want to release your ip address and want to renew your network configuration with new ip address --> sudo dhclient
 
+Note:
+Dynamic Host Configuration Protocol (DHCP) is a protocol for assigning dynamic IP addresses to devices on a network. With dynamic addressing, a device can have a different IP address every time it connects to the network.
 
+If you change the networking configuration files in anyway, you need to restart the networking service. For this, use the command
 
+sudo /etc/init.d/networking {stop/start/restart}
 
+Network configuration
+---------------------
+In Linux network configuration file is /etc/network/interfaces. This is the file that controls the ipaddresses for the network cards on the system. Here is the file in from the aws ec2 instance.
 
+			# This file describes the network interfaces available on your system
+			# and how to activate them. For more information, see interfaces(5).
 
+			# The loopback network interface
+			auto lo
+			iface lo inet loopback
 
+			# Source interfaces
+			# Please check /etc/network/interfaces.d before changing this file
+			# as interfaces may have been defined in /etc/network/interfaces.d
+			# See LP: #1262951
+			source /etc/network/interfaces.d/*.cfg
+
+Note: The loopback device is a special, virtual network interface that your computer uses to communicate with itself. It is used mainly for diagnostics and troubleshooting, and to connect to servers running on the local machine.
+
+So, if you want your computer get a dhcp address, you just need the below two lines.
+
+	auto lo or auto eth0
+	iface eth0 inet dhcp
+
+The rest of the configuration comes automatically from dhcp server. If you want to give a static ipaddress, you need to configure address,network,broadcast,gateway etc like below.
+
+auto lo or auto eth0 --> It means auto decides(negotitates) network cards either 10mbps,10gbps etc.
+iface eth0 inet static --> It means this is a static ip address.
+address xxxx -> This is the ipaddress.
+netmask --> This is the subnet mask.
+network xxxx -> This is the network address. For ex, if ipaddress is 10.0.0.9, network would be 10.0.0.0.
+broadcast xxxx -> This is the broadcast address. For ex, if ipaddress is 10.0.0.9, broadcast ad would be 10.0.0.255. This represents the is the address range that this computer sends a message to every other computer on the same network.
+gateway --> This is the router/modem address using which you interact with outside world.
+
+Note:
+Any changes done to this file or other networking, don't forget to restart the service as described in the above section.
+
+DNS configuration
+-----------------
+If you want to put a static ip address for configuration of dns, interfaces file doesn't have configuration for this. This information is present in /etc/resolv.conf.
+It has entries in the below format like windows hosts file. 
+{dnsname} ipaddress
+
+To check the hostname of your computer,
+
+sudo /bin/hostname
+
+If you want to change the hostname,
+
+sudo /bin/hostname {newName}
+
+Note: You need to restart the network service after changing hostname.
+
+Ping
+----
+Generally, routers are present at 10.1.10.1. If you use "ping 10.1.10.1" it responnds. But, if you get "destination not found", there is an issue connecting to router. 
+This could be due an issue in interfaces file having wrong address or your network cards disabled or due to some other reason.
+
+Ping {domainname} --> For ex: ping google.com
+
+If ping {router} is working fine, but ping google.com is not working properly, then there is an issue with dns configuration. So, you need to get into resolve.conf and change dns server configuration.
+
+UFW firewall
+------------
+To check the status of firewall, "sudo ufw status".
+
+If you want to configure your firewall(either to allow all or block all) --> "sudo ufw default allow" or "sudo ufw default deny".
+
+To turn on/ turn of, firewall -> sudo ufw enable/disable.
+
+To create a rule
+----------------
+To allow/deny port ranges -> sudo ufw allow/deny 80.
+To allow/deny traffice from specific ip addresses -> sudo ufw allow/deny from 207.120.156.255
+Allow/deny from specific ipaddress to a port ->  sudo ufw allow/deny from 207.120.156.255 to any port 22
+
+Note: any in the command represents all protocols.
+Note: If you want to do the above for a set of ipaddresses, you need to execute the command multiple times.
+
+To delete a rule
+----------------
+sudo ufw delete allow/deny 80
+sudo ufw delete allow/deny from 207.120.156.255
+
+The above commands allow wildcards also. For ex: sudo ufw allow/deny from 207.120.*.*
+
+SSH and FTP
+-----------
+SSH
+---
+Using SSh and FTP we can remotely administer our linux server. By default ssh is installed in ubuntu. If not install ssh using 'sudo apt-get install ssh'. It's a networking service. It runs on port 22. If port 22, is not enabled enable it using above firewall setting.
+
+Once ssh is enabled, get the ipaddress or dns name(if available over internet), and connect to your linux machine using softwares like putty.
+
+FTP
+---
+FTP is for uploading and downloading files to your linux server. For this your linux server should have vsftpd(very secure file transfer protocol daemon) installed.
+To make ftp work propertly, you need to change some configuration. The configuration for this software is present at the location /etc/vsftpd.conf. The following settings need to be available. By default, FTP runs on port 21.
+
+a)local_enable=YES
+b)write_enable=YES --> This says, people can write to server. By default, all users have read access to download files from linux server.
+
+Followed by those changes, we need to restart service --> sudo service vsftpd restart.
+
+From the remote machine to access your linux server you need a ftp client. For windows we use winscp or filezilla etc.
+
+Linux Backup with tar and Cron jobs
+-----------------------------------
+Tar means tape archive file. We can take linux backup in tar files. It is generally used to collect a large no of files and placing them into one easily distributed archive file.
+
+Cron jobs allow us to schedule tasks. These jobs we can configure to take backup of your linux system. These jobs can be used to schedule many other tasks.
+
+By default tar is installed in your linux system. If not, install tar using --> sudo apt-get install tar.
+
+Creating backup 
+---------------
+sudo tar -cvpzf mybackup.tar.gz --exclude=/mnt / 
+
+c -> create(
+v -> verbose(Displays console messages of what is happening)
+p -> preserving permissions.(If you don't use p the once file generated, you will not have any permissions on the files that you are preserving.)
+z -> compression(once tar file is created, this compression will help to reduce the size as much as possible)
+f -> file(To give a filename)
+exclude --> To exclude everything inside /mnt directory because these are external drives
+/ -> root directory
+
+So, the above command takes a backup of everything in your server except /mnt directory. 
+
+Note: The command is recursive, you don't need to mention -R. Also, we know that linux doesn't care aboue file associations/extension like .tar.gz, but this is for us to identify what that file is.
+
+Recovery from backup
+--------------------
+sudo tar -xvpzf mybackup.tar.gz -C /recovery
+
+x -> for extracting
+C -> extract to a different new directory, so that it will not override anything in the current system.
+
+Note: Most of the times, if the file is not a compressed one, we don't use z. Also, if you don't want any verbose output, we don't use v. All other paramerters like c,v,p,f,x are mostly used every time.
+
+Cron Job
+--------
+To create a crontab, use the command "sudo crontab -e". If you type this command for the very first, it will ask you to open this with editor of choice. Choose an editor.
+
+The last line you will see will be like this.
+
+# m h  dom mon dow   command
+
+Note:
+To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
+
+Valid values 
+------------
+m -> 0-59
+h -> 0-23
+dom -> 1-31
+mon -> 1-12
+dow -> 0-6
+
+For ex, if you want to setup a cronjob for recovery task every day, midnight
+0 0 * * * sudo tar -cvzpf /home/ubuntu/mybackup`date +\%d-\%H:\%M`.tar.gz /var/www/
+
+To understand date, please refer to the link https://devanswers.co/how-to-automatically-backup-web-server-doc-root-tar-cron/
