@@ -408,10 +408,8 @@ To create a crontab, use the command "sudo crontab -e". If you type this command
 
 The last line you will see will be like this.
 
-# m h  dom mon dow   command
-
-Note:
-To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
+	m h  dom mon dow   command
+	To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
 
 Valid values 
 ------------
