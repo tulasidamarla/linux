@@ -412,7 +412,7 @@ The last line you will see will be like this.
 	To define the time you can provide concrete values for minute (m), hour (h), day of month (dom), month (mon), and day of week (dow) or use '*' in these fields (for 'any').
 
 Valid values 
-------------<br>
+------------
 m -> 0-59 <br>
 h -> 0-23<br>
 dom -> 1-31<br>
