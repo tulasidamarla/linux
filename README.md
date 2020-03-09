@@ -289,13 +289,13 @@ So, if you want your computer get a dhcp address, you just need the below two li
 
 The rest of the configuration comes automatically from dhcp server. If you want to give a static ipaddress, you need to configure address,network,broadcast,gateway etc like below.
 
-auto lo or auto eth0 --> It means auto decides(negotitates) network cards either 10mbps,10gbps etc.
-iface eth0 inet static --> It means this is a static ip address.
-address xxxx -> This is the ipaddress.
-netmask --> This is the subnet mask.
-network xxxx -> This is the network address. For ex, if ipaddress is 10.0.0.9, network would be 10.0.0.0.
-broadcast xxxx -> This is the broadcast address. For ex, if ipaddress is 10.0.0.9, broadcast ad would be 10.0.0.255. This represents the is the address range that this computer sends a message to every other computer on the same network.
-gateway --> This is the router/modem address using which you interact with outside world.
+	auto lo or auto eth0 --> It means auto decides(negotitates) network cards either 10mbps,10gbps etc.
+	iface eth0 inet static --> It means this is a static ip address.
+	address xxxx -> This is the ipaddress.
+	netmask --> This is the subnet mask.
+	network xxxx -> This is the network address. For ex, if ipaddress is 10.0.0.9, network would be 10.0.0.0.
+	broadcast xxxx -> This is the broadcast address. For ex, if ipaddress is 10.0.0.9, broadcast ad would be 10.0.0.255. This       represents the is the address range that this computer sends a message to every other computer on the same network.
+	gateway --> This is the router/modem address using which you interact with outside world.
 
 Note:
 Any changes done to this file or other networking, don't forget to restart the service as described in the above section.
